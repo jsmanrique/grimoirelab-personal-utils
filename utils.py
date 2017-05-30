@@ -91,7 +91,7 @@ def load_names(names_file):
 
     return names_cache
 
-def genderize_index(es, es_index, names_file, name_es_index_field, genderize):
+def genderize_index(es, es_index, names_file, es_index_field, genderize):
     """ Function to add gender information for a given ES index and field
     """
 
@@ -104,7 +104,7 @@ def genderize_index(es, es_index, names_file, name_es_index_field, genderize):
     for item in tqdm(helpers.scan(es, query, scroll='300m', index=es_index), \
                     ascii=True, desc='Gender info extracted'):
 
-        full_name = item['_source'][name_es_index_field]
+        full_name = item['_source'][es_index_field]
 
         first_name = full_name.split(' ')[0]
 
@@ -112,20 +112,20 @@ def genderize_index(es, es_index, names_file, name_es_index_field, genderize):
             names[first_name] = {}
             gender_info = genderize.get([first_name])
             if gender_info[0]['gender'] == None:
-                names[first_name]['gender'] = 'unknown'
-                names[first_name]['gender_prob'] = 1
-                names[first_name]['gender_count'] = 0
+                names[first_name][es_index_field + '_gender'] = 'unknown'
+                names[first_name][es_index_field + '_gender_prob'] = 1
+                names[first_name][es_index_field + '_gender_count'] = 0
             else:
-                names[first_name]['gender'] = gender_info[0]['gender']
-                names[first_name]['gender_prob'] = gender_info[0]['probability']
-                names[first_name]['gender_count'] = gender_info[0]['count']
+                names[first_name][es_index_field + '_gender'] = gender_info[0]['gender']
+                names[first_name][es_index_field + '_gender_prob'] = gender_info[0]['probability']
+                names[first_name][es_index_field + '_gender_count'] = gender_info[0]['count']
             # Let's update names file with new names gender information
             with open(names_file, 'a') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=['name', 'gender', \
                                         'probability', 'count'])
-                writer.writerow({'name': first_name, 'gender': names[first_name]['gender'],\
-                                'probability': names[first_name]['gender_prob'],\
-                                'count': names[first_name]['gender_count']})
+                writer.writerow({'name': first_name, 'gender': names[first_name][es_index_field + '_gender'],\
+                                'probability': names[first_name][es_index_field + '_gender_prob'],\
+                                'count': names[first_name][es_index_field + '_gender_count']})
         docs.append({'_op_type': 'update', '_index': es_index, '_type': 'items',\
                     '_id':item['_id'], 'doc':names[first_name]})
     helpers.bulk(es, docs)

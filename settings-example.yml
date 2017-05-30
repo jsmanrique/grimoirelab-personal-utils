@@ -4,3 +4,11 @@ es_host: http://localhost:9200                      # Elasticsearch host, descri
 # Genderize info
 genderize_api_key: *****                            # Genderize API Key
 names_file: names_gender.csv                        # File with names information
+# Tokens
+meetup_api_key: *****
+github_token: *****
+# Data sources
+meetup:                                             # List of Meetup groups names
+  -
+git:                                                # List of git repositories urls        
+  -
