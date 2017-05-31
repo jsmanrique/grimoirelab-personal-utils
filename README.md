@@ -33,7 +33,7 @@ Other ideas:
 
 Of course, there will be issues! I am not a computer scientist, and I am self-learning Python, Elasticsearch, etc. during this journey.
 
-If you find any issue, feel free to [open a new one](https://github.com/jsmanrique/grimoirelab-personal-utils/issues/new).
+If you find any issue, feel free to [report it](https://github.com/jsmanrique/grimoirelab-personal-utils/issues/new).
 
 Pull requests are also welcome, but I wouldn't recommend you losing time with this poor code. If you wanna help, [go for the real thing](http://grimoirelab.github.io)!
 
