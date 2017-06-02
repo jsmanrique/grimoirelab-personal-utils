@@ -10,5 +10,7 @@ github_token: *****
 # Data sources
 meetup:                                             # List of Meetup groups names
   -
-git:                                                # List of git repositories urls        
+git:                                                # List of git repositories urls
+  -
+github-repo:                                        # List of github repositories urls
   -

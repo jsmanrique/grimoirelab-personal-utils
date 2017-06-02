@@ -37,6 +37,8 @@ import yaml
 
 from tqdm import tqdm
 
+import logging
+
 def read_config_file(filename):
     """ Function to read yaml file with settings information
     """
@@ -44,12 +46,13 @@ def read_config_file(filename):
     with open(filename) as data_file:
     	config_data = yaml.load(data_file)
 
+    logging.info(filename + ' settings file readed and parsed')
     return config_data
 
 def establish_connection(es_host):
     """ Function to estabilish connection with a running Elasticsearch
 
-    The functions create a Elasticsearch client
+    The functions create an Elasticsearch client
     """
 
     es = Elasticsearch([es_host])
@@ -57,7 +60,7 @@ def establish_connection(es_host):
     if not es.ping():
         raise ValueError('Connection refused')
     else:
-        print('Connection established')
+        logging.info('Connection established with ' + es_host)
         return es
 
 def genderize(genderize_api_key):
@@ -89,6 +92,7 @@ def load_names(names_file):
                                     'probability', 'count'])
             writer.writeheader()
 
+    logging.info(names_file + ' names and gender file info readed and parsed')
     return names_cache
 
 def genderize_index(es, es_index, names_file, es_index_field, genderize):
@@ -126,7 +130,12 @@ def genderize_index(es, es_index, names_file, es_index_field, genderize):
                 writer.writerow({'name': first_name, 'gender': names[first_name][es_index_field + '_gender'],\
                                 'probability': names[first_name][es_index_field + '_gender_prob'],\
                                 'count': names[first_name][es_index_field + '_gender_count']})
-        docs.append({'_op_type': 'update', '_index': es_index, '_type': 'items',\
+        docs.append({'_op_type': 'update', '_index': es_index, '_type': 'item',\
                     '_id':item['_id'], 'doc':names[first_name]})
     helpers.bulk(es, docs)
-    print('Gender info updated')
+    logging.info('Gender info updated')
+
+def create_ES_index(es, index_name, index_mapping):
+    es.indices.delete(index_name, ignore=[400, 404])
+    es.indices.create(index_name, body=index_mapping)
+    logging.info(index_name + ' index created')
