@@ -1,4 +1,5 @@
 settings.yml
+Raw*
 *.csv
 /.ipynb_checkpoints
 /__pycache__
