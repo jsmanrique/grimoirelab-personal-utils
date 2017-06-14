@@ -39,6 +39,59 @@ from tqdm import tqdm
 
 import logging
 
+""" Some constansts, mainly mappings that would be used to format data
+"""
+
+MAPPING_GITHUB_GIT = {
+    "mappings": {
+        "item": {
+            "properties": {
+                "date": {
+                    "type": "date",
+                    "format" : "E MMM d HH:mm:ss yyyy Z",
+                    "locale" : "US"
+                },
+                "commit_id": {"type": "keyword"},
+                "contributor_name": {"type": "keyword"},
+                "contributor_email_domain": {"type": "keyword"},
+                "file": {"type": "keyword"},
+                "lines_added": {"type": "integer"},
+                "lines_removed": {"type": "integer"},
+                "github_owner": {"type": "keyword"},
+                "github_repository": {"type": "keyword"}
+            }
+        }
+    }
+}
+
+MAPPING_GITHUB_ISSUES = {
+    "mappings": {
+        "item": {
+            "properties": {
+                "date": {
+                    "type": "date",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                },
+                "contributor_github_username": {"type": "keyword"},
+                "title": {"type": "string"},
+                "state": {"type": "keyword"},
+                "issue_type": {"type": "keyword"},
+                "url": {"type": "keyword"},
+                "comments": {"type": "integer"},
+                "closed_at": {
+                    "type": "date",
+                    "format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                },
+                "time_to_solve": {"type": "integer"},
+                "assignee_github_username": {"type": "keyword"},
+                "github_owner": {"type": "keyword"},
+                "github_repository": {"type": "keyword"}
+            }
+        }
+    }
+}
+
+
 def read_config_file(filename):
     """ Function to read yaml file with settings information
     """
