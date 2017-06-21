@@ -72,7 +72,7 @@ MAPPING_GITHUB_ISSUES = {
                     "type": "date",
                     "format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
                 },
-                "contributor_github_username": {"type": "keyword"},
+                "contributor_name": {"type": "keyword"},
                 "title": {"type": "string"},
                 "state": {"type": "keyword"},
                 "issue_type": {"type": "keyword"},
@@ -83,9 +83,34 @@ MAPPING_GITHUB_ISSUES = {
                     "format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
                 },
                 "time_to_solve": {"type": "integer"},
-                "assignee_github_username": {"type": "keyword"},
+                "assignee_name": {"type": "keyword"},
                 "github_owner": {"type": "keyword"},
                 "github_repository": {"type": "keyword"}
+            }
+        }
+    }
+}
+
+MAPPING_RAW = {
+    "mappings": {
+        "item": {
+            "properties": {
+                "uuid": {"type": "keyword"},
+                "updated_on": {
+                    "type": "date",
+                    "format": "yyyy-MM-dd HH:mm:ss"
+                },
+                "backend_name":{"type":"keyword"},
+                "tag":{"type":"keyword"},
+                "category":{"type":"keyword"},
+                "timestamp":{
+                    "type":"date",
+                    "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
+                },
+                "backend_version":{"type":"keyword"},
+                "data":{"type":"object"},
+                "origin":{"type":"keyword"},
+                "perceval_version":{"type":"keyword"}
             }
         }
     }
@@ -105,7 +130,7 @@ def read_config_file(filename):
 def establish_connection(es_host):
     """ Function to estabilish connection with a running Elasticsearch
 
-    The functions create an Elasticsearch client
+        Given an elasticsearch host, it returns an Elasticsearch client
     """
 
     es = Elasticsearch([es_host])
@@ -189,6 +214,20 @@ def genderize_index(es, es_index, names_file, es_index_field, genderize):
     logging.info('Gender info updated')
 
 def create_ES_index(es, index_name, index_mapping):
+    """ Function to create an Elasticsearch index.
+        Given an ES client (es), an index name (index_name) and its mapping
+        (index_mapping), it removes any index with same name and create a
+        new one.
+    """
     es.indices.delete(index_name, ignore=[400, 404])
     es.indices.create(index_name, body=index_mapping)
     logging.info(index_name + ' index created')
+
+def create_KIB_index_pattern(es, index_name, time_field_name):
+    """ Function to create a Kibana index pattern to visualize data
+        Given an ES client (es), an index (index_name) and its time field name
+        (time_field_name), it creates a Kibana index pattern to visualize
+        the data.
+    """
+    es.index(index='.kibana', doc_type='index-pattern', id=index_name, body={'title': index_name, 'timeFieldName': time_field_name})
+    logging.info(index_name + ' Kibana index pattern created')
